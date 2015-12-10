@@ -23,6 +23,9 @@ Route::group(['prefix' => 'API'], function() {
 Route::get('auth/login', 'Auth\AuthController@getLogin');
 Route::post('auth/login', 'Auth\AuthController@postLogin');
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
+Route::post('API/access_token', function() {
+ return Response::json(Authorizer::issueAccessToken());
+});
 
 // Registration routes...
 Route::get('auth/register', 'Auth\AuthController@getRegister');
