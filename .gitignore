@@ -1,0 +1,10 @@
+/vendor
+/node_modules
+/app/Http/Controllers/TestController.php
+/app/Post.php
+/app/Link.php
+/resources/views/links
+/resources/views/auth
+Homestead.yaml
+Homestead.json
+.env

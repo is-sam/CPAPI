@@ -12,7 +12,7 @@ class APIController extends Controller
     /**
      * @var dao
      */
-    private $dao;
+    protected $dao;
 
     /**
      * APIController constructor.
@@ -30,15 +30,16 @@ class APIController extends Controller
      */
     public function index($lang)
     {
-        $counyty = Input::get('country');
-        $flow = Input::get('flow');
-        $from_date = Input::get('from_date');
-        $to_date = Input::get('to_date');
-
         header('Content-Type: application/json');
         header('Access-Control-Allow-Origin: *');
 
-        $commodities = $this->dao->listCommodities($lang);
+        $properties['country'] = Input::get('country');
+        $properties['flow'] = Input::get('flow');
+        $properties['from_date'] = Input::get('from_date');
+        $properties['to_date'] = Input::get('to_date');
+        $properties['lang'] = $lang;
+
+        $commodities = $this->dao->listCommodities($properties);
 
         if (empty($commodities))
             return response('No data found', Response::HTTP_NO_CONTENT);
@@ -58,8 +59,16 @@ class APIController extends Controller
         header('Content-Type: application/json');
         header('Access-Control-Allow-Origin: *');
 
-        $commodity = $this->dao->getCommodity($code, $lang);
+        $properties['country'] = Input::get('country');
+        $properties['flow'] = Input::get('flow');
+        $properties['from_date'] = Input::get('from_date');
+        $properties['to_date'] = Input::get('to_date');
+        $properties['lang'] = $lang;
 
+        $commodity = $this->dao->getCommodity($code, $properties);
+
+        if (empty($commodity))
+            return response('No data found', Response::HTTP_NO_CONTENT);
         $response = json_encode($commodity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         return response($response, Response::HTTP_OK);
 
