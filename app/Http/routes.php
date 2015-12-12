@@ -15,17 +15,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix' => 'API'], function() {
-    Route::resource('commodity', 'APIController', ['only' => ['index', 'show']]);
+Route::group(['prefix' => 'API/{lang}', 'where' => ['lang' => 'fr|en']], function() {
+    Route::resource('/commodities', 'APIController', ['only' => ['index', 'show']]);
 });
 
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');
 Route::post('auth/login', 'Auth\AuthController@postLogin');
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
-Route::post('API/access_token', function() {
- return Response::json(Authorizer::issueAccessToken());
-});
 
 // Registration routes...
 Route::get('auth/register', 'Auth\AuthController@getRegister');
