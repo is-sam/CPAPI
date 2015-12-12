@@ -15,6 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('salut', function () {
+    return ('salut');
+});
+
 Route::group(['prefix' => 'API/{lang}', 'where' => ['lang' => 'fr|en']], function() {
     Route::resource('/commodities', 'APIController', ['only' => ['index', 'show']]);
 });
