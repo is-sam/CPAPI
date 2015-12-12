@@ -46,7 +46,8 @@ class CommoditiesDAO implements ICommoditiesDAO
             FROM api_customs_liste
             WHERE nc8txt = '$code'
             ");
-
+        if (isset($commodity[0]))
+            $commodity = $commodity[0];
         $code = $commodity->code;
         if (strncmp($code, 'P', 1) == 0)
         {
