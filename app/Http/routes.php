@@ -11,15 +11,13 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('API', function () {
     return view('welcome');
 });
-
-Route::get('salut', function () {
-    return ('salut');
+Route::post('API/access_token', function(){
+    return Response::json(Authorizer::issueAccessToken());
 });
-
-Route::group(['prefix' => 'API/{lang}', 'where' => ['lang' => 'fr|en']], function() {
+Route::group(['prefix' => 'API/{lang}', 'where' => ['lang' => 'fr|en'], 'middleware' => 'oauth'], function() {
     Route::resource('/commodities', 'APIController', ['only' => ['index', 'show']]);
 });
 
