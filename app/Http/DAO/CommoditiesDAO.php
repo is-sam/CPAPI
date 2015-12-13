@@ -18,12 +18,19 @@ class CommoditiesDAO implements ICommoditiesDAO
         $lang = $properties['lang'];
 
         $query = "
-            SELECT code_imf as code, name_$lang, source_$lang, unite_$lang
-            FROM api_imf_liste
-            UNION
             SELECT nc8txt as code, name_$lang, source_$lang, unite_$lang
             FROM api_customs_liste
+        ";
+
+        if (empty($properties['country']))
+        {
+            $query .= "
+                UNION
+                SELECT code_imf as code, name_$lang, source_$lang, unite_$lang
+                FROM api_imf_liste
             ";
+        }
+
         $commodities = DB::select($query);
 
         foreach($commodities as $index => $commodity)
@@ -31,13 +38,20 @@ class CommoditiesDAO implements ICommoditiesDAO
             $code = $commodity->code;
             if (strncmp($code, 'P', 1) == 0)
             {
-                $prix = $this->getImfData($code, $properties);
+                $data = $this->getImfData($code, $properties);
             }
             else if (strncmp($code, 'nc8_', 4) == 0)
             {
-                $prix = $this->getNc8DataGlobal($code, $properties);
+                if (empty($properties['country']))
+                    $data = $this->getNc8DataGlobal($code, $properties);
+                else
+                    $data = $this->getNc8DataCountry($code, $properties);
             }
-            $commodities[$index]->data = $prix;
+            if (!empty($data))
+                $commodities[$index]->data = $data;
+            else
+                unset($commodities[$index]);
+
         }
 
         return $commodities;
@@ -53,7 +67,7 @@ class CommoditiesDAO implements ICommoditiesDAO
     {
         $lang = $properties['lang'];
 
-        $commodity = DB::select("
+        $query = "
             SELECT code_imf as code, name_$lang, source_$lang, unite_$lang
             FROM api_imf_liste
             WHERE code_imf = '$code'
@@ -61,21 +75,29 @@ class CommoditiesDAO implements ICommoditiesDAO
             SELECT nc8txt as code, name_$lang, source_$lang, unite_$lang
             FROM api_customs_liste
             WHERE nc8txt = '$code'
-            ");
+        ";
+
+        $commodity = DB::select($query);
 
         if (isset($commodity[0]))
             $commodity = $commodity[0];
         if (!empty($commodity)) {
             $code = $commodity->code;
-            if (strncmp($code, 'P', 1) == 0) {
-                $prix = $this->getImfData($code, $properties);
-            } else if (strncmp($code, 'nc8_', 4) == 0) {
-                if (empty($properties['country']))
-                    $prix = $this->getNc8DataGlobal($code, $properties);
-                else
-                    $prix = $this->getNc8DataCountry($code, $properties);
+            if (strncmp($code, 'P', 1) == 0)
+            {
+                $data = $this->getImfData($code, $properties);
             }
-            $commodity->data = $prix;
+            else if (strncmp($code, 'nc8_', 4) == 0)
+            {
+                if (empty($properties['country']))
+                    $data = $this->getNc8DataGlobal($code, $properties);
+                else
+                    $data = $this->getNc8DataCountry($code, $properties);
+            }
+            if (!empty($data))
+                $commodity->data = $data;
+            else
+                unset($commodity);
         }
 
         return $commodity;
@@ -88,7 +110,7 @@ class CommoditiesDAO implements ICommoditiesDAO
      */
     public function getImfData($code, $properties)
     {
-        $prices = DB::select("
+        $query = "
             SELECT (
                 CASE
                 WHEN imf_list.currency = 'USD / EUR'
@@ -109,10 +131,33 @@ class CommoditiesDAO implements ICommoditiesDAO
             INNER JOIN api_dates as dates
             ON imf_data.id_date = dates.id
             WHERE imf_data.code_imf = ?
-            ORDER BY dates.id;
-            ", [$code]);
+        ";
 
-        return $prices;
+        if (!empty($properties['from_date']) && preg_match('/^\d{4}_\d{2}$/', $properties['from_date']))
+        {
+            preg_match('/^(\d{4})_(\d{2})$/', $properties['from_date'], $matches);
+            $year = $matches[1];
+            $month = $matches[2];
+            $id_date = $this->getIdFromDate($year, $month);
+            $id_date = $id_date[0]->id;
+            $query .= "AND imf_data.id_date >= '$id_date' ";
+        }
+
+        if (!empty($properties['to_date']) && preg_match('/^\d{4}_\d{2}$/', $properties['to_date']))
+        {
+            preg_match('/^(\d{4})_(\d{2})$/', $properties['to_date'], $matches);
+            $year = $matches[1];
+            $month = $matches[2];
+            $id_date = $this->getIdFromDate($year, $month);
+            $id_date = $id_date[0]->id;
+            $query .= "AND imf_data.id_date <= '$id_date' ";
+        }
+
+        $query .= "ORDER BY dates.id";
+
+        $data = DB::select($query, [$code]);
+
+        return $data;
     }
 
     /**
@@ -122,55 +167,109 @@ class CommoditiesDAO implements ICommoditiesDAO
      */
     public function getNc8DataGlobal($code, $properties)
     {
-        $query = "SELECT global.prix as price, global.volume, dates.mois as month, dates.annee as year, global.flux as flow
-        FROM api_customs_data_global as global
-        INNER JOIN api_customs_nc8 as nc8 ON global.id_code_nc8 = nc8.id
-        INNER JOIN api_dates as dates ON global.id_date = dates.id
-        INNER JOIN api_customs_liste as customs_liste ON nc8.code_nc8 = customs_liste.nc8
-        WHERE customs_liste.nc8txt = ?";
+        $query = "
+            SELECT global.prix as price, global.volume, dates.mois as month, dates.annee as year, global.flux as flow
+            FROM api_customs_data_global as global
+            INNER JOIN api_customs_nc8 as nc8 ON global.id_code_nc8 = nc8.id
+            INNER JOIN api_dates as dates ON global.id_date = dates.id
+            INNER JOIN api_customs_liste as customs_liste ON nc8.code_nc8 = customs_liste.nc8
+            WHERE customs_liste.nc8txt = ?
+        ";
 
+        if (!empty($properties['from_date']) && preg_match('/^\d{4}_\d{2}$/', $properties['from_date']))
+        {
+            preg_match('/^(\d{4})_(\d{2})$/', $properties['from_date'], $matches);
+            $year = $matches[1];
+            $month = $matches[2];
+            $id_date = $this->getIdFromDate($year, $month);
+            $id_date = $id_date[0]->id;
+            $query .= "AND global.id_date >= '$id_date' ";
+        }
+
+        if (!empty($properties['to_date']) && preg_match('/^\d{4}_\d{2}$/', $properties['to_date']))
+        {
+            preg_match('/^(\d{4})_(\d{2})$/', $properties['to_date'], $matches);
+            $year = $matches[1];
+            $month = $matches[2];
+            $id_date = $this->getIdFromDate($year, $month);
+            $id_date = $id_date[0]->id;
+            $query .= "AND global.id_date <= '$id_date' ";
+        }
 
         if ($properties['flow'] == 'i')
-            $query .= " AND global.flux = 1";
+            $query .= "AND global.flux = 1 ";
         else if ($properties['flow'] == 'e')
-            $query .= " AND global.flux = 0";
+            $query .= "AND global.flux = 0 ";
 
-        $query .= " ORDER BY dates.id;";
+        $query .= "ORDER BY dates.id";
 
-        $prices = DB::select($query, [$code]);
+        $data = DB::select($query, [$code]);
 
-        return $prices;
+        return $data;
     }
 
     public function getNc8DataCountry($code, $properties)
     {
-        $query = "SELECT data_pays.prix as price, pays.code_pays as country_code, data_pays.volume, dates.mois as month, dates.annee as year, data_pays.flux as flow
-        FROM api_customs_data_pays as data_pays
-        INNER JOIN api_customs_pays as pays ON data_pays.id_code_pays = pays.id
-        INNER JOIN api_customs_niv niv ON niv.id_code_nc8 = data_pays.id_code_nc8 AND niv.flux = data_pays.flux
-AND niv.id_code_pays = data_pays.id_code_pays
-        INNER JOIN api_customs_nc8 as nc8 ON data_pays.id_code_nc8 = nc8.id
-        INNER JOIN api_dates as dates ON data_pays.id_date = dates.id
-        INNER JOIN api_customs_liste as customs_liste ON nc8.code_nc8 = customs_liste.nc8
-        WHERE customs_liste.nc8txt = ?";
+        $query = "
+            SELECT data_pays.prix as price, pays.code_pays as country_code, data_pays.volume, dates.mois as month, dates.annee as year, data_pays.flux as flow
+            FROM api_customs_data_pays as data_pays
+            INNER JOIN api_customs_pays as pays ON data_pays.id_code_pays = pays.id
+            INNER JOIN api_customs_niv niv ON niv.id_code_nc8 = data_pays.id_code_nc8
+              AND niv.flux = data_pays.flux
+              AND niv.id_code_pays = data_pays.id_code_pays
+            INNER JOIN api_customs_nc8 as nc8 ON data_pays.id_code_nc8 = nc8.id
+            INNER JOIN api_dates as dates ON data_pays.id_date = dates.id
+            INNER JOIN api_customs_liste as customs_liste ON nc8.code_nc8 = customs_liste.nc8
+            WHERE customs_liste.nc8txt = ?
+        ";
+
+        if (!empty($properties['from_date']) && preg_match('/^\d{4}_\d{2}$/', $properties['from_date']))
+        {
+            preg_match('/^(\d{4})_(\d{2})$/', $properties['from_date'], $matches);
+            $year = $matches[1];
+            $month = $matches[2];
+            $id_date = $this->getIdFromDate($year, $month);
+            $id_date = $id_date[0]->id;
+            $query .= "AND data_pays.id_date >= '$id_date' ";
+        }
+
+        if (!empty($properties['to_date']) && preg_match('/^\d{4}_\d{2}$/', $properties['to_date']))
+        {
+            preg_match('/^(\d{4})_(\d{2})$/', $properties['to_date'], $matches);
+            $year = $matches[1];
+            $month = $matches[2];
+            $id_date = $this->getIdFromDate($year, $month);
+            $id_date = $id_date[0]->id;
+            $query .= "AND data_pays.id_date <= '$id_date' ";
+        }
+        
         if ($properties['country'] != 'all')
-            $query .= " AND pays.code_pays = '" . $properties['country'] . "'
-            AND niv.niv = 0";
+            $query .= "
+                AND pays.code_pays = '" . $properties['country'] . "'
+                AND niv.niv = 0
+            ";
 
         if ($properties['flow'] == 'i')
-            $query .= " AND data_pays.flux = 1";
+            $query .= "AND data_pays.flux = 1 ";
         else if ($properties['flow'] == 'e')
-            $query .= " AND data_pays.flux = 0";
+            $query .= "AND data_pays.flux = 0 ";
 
-        $query .= " ORDER BY dates.id;";
+        $data = DB::select($query, [$code]);
 
-        $prices = DB::select($query, [$code]);
-
-        return $prices;
+        return $data;
     }
 
-    public function getIdFromDate($month, $year)
+    public function getIdFromDate($year, $month)
     {
-        // TODO: Implement getIdFromDate() method.
+        $query = "
+            SELECT id
+            FROM api_dates
+            WHERE mois = ?
+            AND annee = ?
+        ";
+
+        $id = DB::select($query, [$month, $year]);
+
+        return $id;
     }
 }
