@@ -1,0 +1,195 @@
+<!DOCTYPE HTML><html><head><title>CommoPrices REST API documentation</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="https://github.com/kevinrenskers/raml2html 2.1.2"><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/styles/default.min.css"><script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script><script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/highlight.min.js"></script><script type="text/javascript">
+      $(document).ready(function() {
+        $('.page-header pre code, .top-resource-description pre code').each(function(i, block) {
+          hljs.highlightBlock(block);
+        });
+
+        $('[data-toggle]').click(function() {
+          var selector = $(this).data('target') + ' pre code';
+          $(selector).each(function(i, block) {
+            hljs.highlightBlock(block);
+          });
+        });
+
+        // open modal on hashes like #_action_get
+        $(window).bind('hashchange', function(e) {
+          var anchor_id = document.location.hash.substr(1); //strip #
+          var element = $('#' + anchor_id);
+
+          // do we have such element + is it a modal?  --> show it
+          if (element.length && element.hasClass('modal')) {
+            element.modal('show');
+          }
+        });
+
+        // execute hashchange on first page load
+        $(window).trigger('hashchange');
+
+        // remove url fragment on modal hide
+        $('.modal').on('hidden.bs.modal', function() {
+          try {
+            if (history && history.replaceState) {
+                history.replaceState({}, '', '#');
+            }
+          } catch(e) {}
+        });
+      });
+    </script><style>
+      .hljs {
+        background: transparent;
+      }
+      .parent {
+        color: #999;
+      }
+      .list-group-item > .badge {
+        float: none;
+        margin-right: 6px;
+      }
+      .panel-title > .methods {
+        float: right;
+      }
+      .badge {
+        border-radius: 0;
+        text-transform: uppercase;
+        width: 70px;
+        font-weight: normal;
+        color: #f3f3f6;
+        line-height: normal;
+      }
+      .badge_get {
+        background-color: #63a8e2;
+      }
+      .badge_post {
+        background-color: #6cbd7d;
+      }
+      .badge_put {
+        background-color: #22bac4;
+      }
+      .badge_delete {
+        background-color: #d26460;
+      }
+      .badge_patch {
+        background-color: #ccc444;
+      }
+      .list-group, .panel-group {
+        margin-bottom: 0;
+      }
+      .panel-group .panel+.panel-white {
+        margin-top: 0;
+      }
+      .panel-group .panel-white {
+        border-bottom: 1px solid #F5F5F5;
+        border-radius: 0;
+      }
+      .panel-white:last-child {
+        border-bottom-color: white;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+      .panel-white .panel-heading {
+        background: white;
+      }
+      .tab-pane ul {
+        padding-left: 2em;
+      }
+      .tab-pane h2 {
+        font-size: 1.2em;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #ddd;
+      }
+      .tab-pane h3 {
+        font-size: 1.1em;
+      }
+      .tab-content {
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+      }
+      #sidebar {
+        margin-top: 30px;
+        padding-right: 5px;
+        overflow: auto;
+        height: 90%;
+      }
+      .top-resource-description {
+        border-bottom: 1px solid #ddd;
+        background: #fcfcfc;
+        padding: 15px 15px 0 15px;
+        margin: -15px -15px 10px -15px;
+      }
+      .resource-description {
+        border-bottom: 1px solid #fcfcfc;
+        background: #fcfcfc;
+        padding: 15px 15px 0 15px;
+        margin: -15px -15px 10px -15px;
+      }
+      .resource-description p:last-child {
+        margin: 0;
+      }
+      .list-group .badge {
+        float: left;
+      }
+      .method_description {
+        margin-left: 85px;
+      }
+      .method_description p:last-child {
+        margin: 0;
+      }
+      .list-group-item {
+        cursor: pointer;
+      }
+      .list-group-item:hover {
+        background-color: #f5f5f5;
+      }
+    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>CommoPrices REST API documentation <small>version v1</small></h1><p>http://www.commoprices.com/API</p></div><div class="panel panel-default"><div class="panel-heading"><h3 id="lang" class="panel-title">/lang</h3></div><div class="panel-body"><div class="top-resource-description"><p>language for the query, fr or en</p></div><div class="panel-group"><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_lang_commodities"><span class="parent">/lang</span>/commodities</a> <span class="methods"><a href="#lang_commodities_get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_lang_commodities" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#lang_commodities_get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Successfully retrieve all available commodities</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="lang_commodities_get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/lang</span>/commodities</h4></div><div class="modal-body"><div class="alert alert-info"><p>Successfully retrieve all available commodities</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by oauth_2_0<p>OAuth2 is a protocol that lets external apps request authorization to access the API</p></div><ul class="nav nav-tabs"><li class="active"><a href="#lang_commodities_get_request" data-toggle="tab">Request</a></li><li><a href="#lang_commodities_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="lang_commodities_get_request"><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2 access token. Do not use together with the "access_token" query string parameter.</p></li></ul><h3>Query Parameters</h3><ul><li><strong>access_token</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2 access token. Do not use together with the "Authorization" header</p></li><li><strong>country</strong>: <em>(string)</em><p>code of the country</p><p><strong>Example</strong>:</p><pre>GB</pre></li><li><strong>flow</strong>: <em>(string)</em><p>used to describe the type of flow wanted, &#39;i&#39; for import, &#39;e&#39; for export, &#39;all&#39; for both types</p></li><li><strong>from_date</strong>: <em>(string)</em><p>starting date for the query, date format: YYYY-MM</p><p><strong>Example</strong>:</p><pre>2012-04</pre></li><li><strong>to_date</strong>: <em>(string)</em><p>end date for the query, date format: YYYY-MM</p><p><strong>Example</strong>:</p><pre>2012-04</pre></li></ul></div><div class="tab-pane" id="lang_commodities_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>Successfully retrieved commodities</p><h3>Body</h3><p><strong>Type: application/json</strong></p><p><strong>Example</strong>:</p><pre><code>{
+   {
+        "code": "PALUM",
+        "name_fr": "Aluminium - pureté &gt; 99,5%, prix CAF des ports UK",
+        "source_fr": "LME (London Metal Exchange) via FMI (Fonds Monétaire International)",
+        "unite_fr": "EUR / t",
+        "prices": [
+            {
+                "prix": "1667.05408756296",
+                "mois": "1",
+                "annee": "2012"
+            }
+            ]
+    },
+    {
+        "code": "PLAMB",
+        "name_fr": "Agneau - carcasses, réfrigérées, Smithfield à Londres",
+        "source_fr": "FMI (Fonds Monétaire International)",
+        "unite_fr": "EUR / t",
+        "prices": [
+            {
+                "prix": "2262.866640836885",
+                "mois": "1",
+                "annee": "2012"
+            }
+        ]
+    }
+}
+</code></pre></div></div></div></div></div></div></div><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_lang_commodities__id_"><span class="parent">/lang/commodities</span>/{id}</a> <span class="methods"><a href="#lang_commodities__id__get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_lang_commodities__id_" class="panel-collapse collapse"><div class="panel-body"><div class="resource-description"><p>A specific commodity, identified by its id</p></div><div class="list-group"><div onclick="window.location.href = '#lang_commodities__id__get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>retrieve specific commodity</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="lang_commodities__id__get"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/lang/commodities</span>/{id}</h4></div><div class="modal-body"><div class="alert alert-info"><p>retrieve specific commodity</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by oauth_2_0<p>OAuth2 is a protocol that lets external apps request authorization to access the API</p></div><ul class="nav nav-tabs"><li class="active"><a href="#lang_commodities__id__get_request" data-toggle="tab">Request</a></li><li><a href="#lang_commodities__id__get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="lang_commodities__id__get_request"><h3>URI Parameters</h3><ul><li><strong>id</strong>: <em>required (string)</em><p>The id of the specific commodity</p><p><strong>Example</strong>:</p><pre>nc8_0000 or PALUM</pre></li></ul><h3>Headers</h3><ul><li><strong>Authorization</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2 access token. Do not use together with the "access_token" query string parameter.</p></li></ul><h3>Query Parameters</h3><ul><li><strong>access_token</strong>: <em>required (string)</em><p>Used to send a valid OAuth 2 access token. Do not use together with the "Authorization" header</p></li><li><strong>country</strong>: <em>(string)</em><p>code of the country</p><p><strong>Example</strong>:</p><pre>GB</pre></li><li><strong>flow</strong>: <em>(string)</em><p>used to describe the type of flow wanted, &#39;i&#39; for import, &#39;e&#39; for export, &#39;all&#39; for both types</p></li><li><strong>from_date</strong>: <em>(string)</em><p>starting date for the query, date format: YYYY-MM</p><p><strong>Example</strong>:</p><pre>2012-04</pre></li><li><strong>to_date</strong>: <em>(string)</em><p>end date for the query, date format: YYYY-MM</p><p><strong>Example</strong>:</p><pre>2012-04</pre></li></ul></div><div class="tab-pane" id="lang_commodities__id__get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>Successfully retrieved information</p><h3>Body</h3><p><strong>Type: application/json</strong></p><p><strong>Example</strong>:</p><pre><code>{
+     "code": "PALUM",
+     "name_fr": "Aluminium - pureté &gt; 99,5%, prix CAF des ports UK",
+     "source_fr": "LME (London Metal Exchange) via FMI (Fonds Monétaire International)",
+     "unite_fr": "EUR / t",
+     "prices": [
+         {
+             "prix": "1667.05408756296",
+             "mois": "1",
+             "annee": "2012"
+         }
+     ]
+ }
+</code></pre><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2><p>Successfully executed request but no data found</p><h3>Body</h3><p><strong>Type: application/json</strong></p><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><p>Unauthorized</p><h3>Body</h3><p><strong>Type: application/json</strong></p></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="access_token" class="panel-title">/access_token</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_access_token"><span class="parent"></span>/access_token</a> <span class="methods"><a href="#access_token_post"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_access_token" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#access_token_post'" class="list-group-item"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>Retrieve an access token in order to access the API</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="access_token_post"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent"></span>/access_token</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retrieve an access token in order to access the API</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by oauth_2_0<p>OAuth2 is a protocol that lets external apps request authorization to access the API</p></div><ul class="nav nav-tabs"><li class="active"><a href="#access_token_post_request" data-toggle="tab">Request</a></li><li><a href="#access_token_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="access_token_post_request"><h3>Headers</h3><ul><li><strong>grant_type</strong>: <em>required (string)</em><p>grant_type, value=&#39;password&#39;</p></li><li><strong>client_id</strong>: <em>required (string)</em><p>Client Identification obtained on registration</p></li><li><strong>client_secret</strong>: <em>required (string)</em><p>Client Secret obtained on registration</p></li><li><strong>username</strong>: <em>required (string)</em><p>Client email</p></li><li><strong>password</strong>: <em>required (string)</em><p>Client password</p></li></ul><h3>Body</h3><p><strong>Type: application/json</strong></p></div><div class="tab-pane" id="access_token_post_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>Successfully created a new token</p><h3>Body</h3><p><strong>Type: application/json</strong></p><p><strong>Example</strong>:</p><pre><code>{
+    "access_token": "IMhaIdD9iiQAP0OZkehVCn4HvI42RCBK3XHreT8S",
+    "token_type": "Bearer",
+    "expires_in": 3600
+}
+</code></pre><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>Bad request</p><h3>Body</h3><p><strong>Type: application/json</strong></p><p><strong>Example</strong>:</p><pre><code>{
+ "error": "invalid_request",
+ "error_description": "The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed. Check the \"grant_type\" parameter."
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#lang">/lang</a></li><li><a href="#access_token">/access_token</a></li></ul></div></div></div></div></body></html>

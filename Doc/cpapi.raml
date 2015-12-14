@@ -1,0 +1,230 @@
+#%RAML 0.8
+---
+title: CommoPrices REST
+baseUri: http://www.commoprices.com/API
+version: v1
+securitySchemes:
+  - oauth_2_0:
+      description: |
+        OAuth2 is a protocol that lets external apps request authorization to access
+        the API
+      type: OAuth 2.0
+      describedBy:
+        headers:
+          Authorization:
+            description: |
+              Used to send a valid OAuth 2 access token. Do not use together with
+              the "access_token" query string parameter.
+            type: string
+        queryParameters:
+          access_token:
+            description: |
+              Used to send a valid OAuth 2 access token. Do not use together with
+              the "Authorization" header
+            type: string
+        responses:
+          404:
+            description: Unauthorized
+      settings:
+        authorizationUri: https://www.commoprices.com/login/oauth/authorize
+        accessTokenUri: https://www.commoprices.com/API/access_token
+        authorizationGrants: [ password ]
+securedBy: [ oauth_2_0 ]
+mediaType: application/json
+/lang:
+    description: language for the query, fr or en
+    /commodities:
+        get:
+           description: Successfully retrieve all available commodities
+           headers:
+               Authorization:
+                   description: |
+                       Used to send a valid OAuth 2 access token. Do not use together with
+                       the "access_token" query string parameter.
+                   type: string
+                   required: true
+           queryParameters:
+               access_token:
+                   description: |
+                       Used to send a valid OAuth 2 access token. Do not use together with
+                       the "Authorization" header
+                   type: string
+                   required: true
+               country:
+                   description: |
+                       code of the country
+                   type: string
+                   required: false
+                   example: GB
+               flow:
+                   description: |
+                       used to describe the type of flow wanted, 'i' for import, 'e' for export, 'all' for both types
+                   required: false
+               from_date:
+                   description: |
+                       starting date for the query, date format: YYYY-MM
+                   type: string
+                   required: false
+                   example: 2012-04
+               to_date:
+                   description: |
+                       end date for the query, date format: YYYY-MM
+                   type: string
+                   required: false
+                   example: 2012-04
+           responses:
+               200:
+                description: Successfully retrieved commodities
+                body:
+                    application/json:
+                        example: |
+                            {
+                               {
+                                    "code": "PALUM",
+                                    "name_fr": "Aluminium - pureté > 99,5%, prix CAF des ports UK",
+                                    "source_fr": "LME (London Metal Exchange) via FMI (Fonds Monétaire International)",
+                                    "unite_fr": "EUR / t",
+                                    "prices": [
+                                        {
+                                            "prix": "1667.05408756296",
+                                            "mois": "1",
+                                            "annee": "2012"
+                                        }
+                                        ]
+                                },
+                                {
+                                    "code": "PLAMB",
+                                    "name_fr": "Agneau - carcasses, réfrigérées, Smithfield à Londres",
+                                    "source_fr": "FMI (Fonds Monétaire International)",
+                                    "unite_fr": "EUR / t",
+                                    "prices": [
+                                        {
+                                            "prix": "2262.866640836885",
+                                            "mois": "1",
+                                            "annee": "2012"
+                                        }
+                                    ]
+                                }
+                            }
+        /{id}:
+            description: A specific commodity, identified by its id
+            uriParameters:
+                id:
+                    description: The id of the specific commodity
+                    type: string
+                    example: nc8_0000 or PALUM
+            get:
+                description: retrieve specific commodity
+                headers:
+                    Authorization:
+                        description: |
+                            Used to send a valid OAuth 2 access token. Do not use together with
+                            the "access_token" query string parameter.
+                        type: string
+                        required: true
+                queryParameters:
+                    access_token:
+                        description: |
+                            Used to send a valid OAuth 2 access token. Do not use together with
+                            the "Authorization" header
+                        type: string
+                        required: true
+                    country:
+                        description: |
+                            code of the country
+                        type: string
+                        required: false
+                        example: GB
+                    flow:
+                        description: |
+                            used to describe the type of flow wanted, 'i' for import, 'e' for export, 'all' for both types
+                        required: false
+                    from_date:
+                        description: |
+                            starting date for the query, date format: YYYY-MM
+                        type: string
+                        required: false
+                        example: 2012-04
+                    to_date:
+                        description: |
+                            end date for the query, date format: YYYY-MM
+                        type: string
+                        required: false
+                        example: 2012-04
+                responses:
+                    200:
+                        description: Successfully retrieved information
+                        body:
+                            application/json:
+                                example: |
+                                   {
+                                        "code": "PALUM",
+                                        "name_fr": "Aluminium - pureté > 99,5%, prix CAF des ports UK",
+                                        "source_fr": "LME (London Metal Exchange) via FMI (Fonds Monétaire International)",
+                                        "unite_fr": "EUR / t",
+                                        "prices": [
+                                            {
+                                                "prix": "1667.05408756296",
+                                                "mois": "1",
+                                                "annee": "2012"
+                                            }
+                                        ]
+                                    }
+                    204:
+                        description: Successfully executed request but no data found
+                        body: 
+                            application/json: null
+                    404:
+                        description: Unauthorized
+                        body: 
+                            application/json: null
+/access_token:
+    post:
+        description: Retrieve an access token in order to access the API
+        body:
+            application/json: null
+        headers:
+            grant_type:
+                description: grant_type, value='password'
+                type: string
+                required: true
+            client_id:
+                description: |
+                    Client Identification obtained on registration
+                type: string
+                required: true
+            client_secret:
+                description: |
+                    Client Secret obtained on registration
+                type: string
+                required: true
+            username:
+                description: |
+                    Client email
+                type: string
+                required: true
+            password:
+                description: |
+                    Client password
+                type: string
+                required: true
+        responses:
+            200:
+                description: Successfully created a new token
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "access_token": "IMhaIdD9iiQAP0OZkehVCn4HvI42RCBK3XHreT8S",
+                                "token_type": "Bearer",
+                                "expires_in": 3600
+                            }
+            400:
+               description: Bad request
+               body:
+                   application/json:
+                        example: |
+                               {
+                                "error": "invalid_request",
+                                "error_description": "The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed. Check the \"grant_type\" parameter."
+                               }
